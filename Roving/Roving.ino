@@ -1,14 +1,14 @@
 /*
- * Roam_with_Ping_on_Servo_Turret
+ * Roving
+ * 
  * BOE Shield-Bot application roams with Ping))) mounted on servo turret.
- * Source: http://learn.parallax.com/BoeShield/RoamingPingShieldBot
- *
- * IMPORTANT: This is an early revision.  Please check back periodically, 
- * and if you find any bugs, please email me at alindsay@parallax.com.
- *
- * Created May 17th, 2012
- * by Andy Lindsay
- * v0.82
+ * 
+ * 2017 Elaine Cole
+ * Original sturcture taken from: http://learn.parallax.com/BoeShield/RoamingPingShieldBot
+ *      Created May 17th, 2012
+ *      by Andy Lindsay
+ *      v0.82
+ * 
  */
                                                                                 
 #include <Servo.h>                                 // Include servo library
