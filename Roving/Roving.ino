@@ -3,8 +3,8 @@
  * 
  * BOE Shield-Bot application roams with Ping))) mounted on servo turret.
  * 
- * 2017 Elaine Cole
- * Original sturcture taken from: http://learn.parallax.com/BoeShield/RoamingPingShieldBot
+ * 2020 Elaine Cole
+ * Original sturcture taken from: https://learn.parallax.com/tutorials/robot/shield-bot/shield-bot-roaming-ping
  *      Created May 17th, 2012
  *      by Andy Lindsay
  *      v0.82
@@ -89,8 +89,7 @@ void loop() {
   delay(100);
   return; 
   // If object in +/- 36 degrees from center is within tooCloseCm threshold... 
-  if ((sequence[i]>=3) && (sequence[i]<=7) && (cm[i] < tooCloseCm))
-  {
+  if ((sequence[i]>=3) && (sequence[i]<=7) && (cm[i] < tooCloseCm)) {
     maneuver(0, 0);                                // Stop moving 
     int theta = findOpening();                     // Get opening (in terms of sequence element
     theta *= degreesTurret;                        // Convert sequence element to degree angle
@@ -99,19 +98,15 @@ void loop() {
     // direction of turret.
     int turnAngleTime = (90 - theta) * msPerTurnDegree;
     
-    if(turnAngleTime < 0)                          // If negative turning angle, 
-    {
+    if (turnAngleTime < 0) {                       // If negative turning angle, 
       maneuver(-200, 200, -turnAngleTime);         // then rotate CCW for turningAngleTime ms
-    }
-    else                                           // If positive turning angle, 
-    {
+    } else {                                       // If positive turning angle, 
       maneuver(200, -200, turnAngleTime);          // then rotate CW for turningAngleTime ms 
     }
     maneuver(200, 200);                            // Start going forward again
   }   
 
-  if(i == 10)                                      // If turret at max, go back to zero 
-  {
+  if (i == 10) {                                   // If turret at max, go back to zero 
     i = -1;
   }  
 }
@@ -123,8 +118,7 @@ void loop() {
  *             Backward  Linear  Stop  Linear   Forward
  *             -200      -100......0......100       200
  */ 
-void maneuver(int speedLeft, int speedRight)
-{
+void maneuver(int speedLeft, int speedRight) {
   // Call maneuver with just 1 ms blocking; servos will keep going indefinitely.
   maneuver(speedLeft, speedRight, 1);              
 }
@@ -138,12 +132,10 @@ void maneuver(int speedLeft, int speedRight)
  *             msTime - time to block code execution before another maneuver
  * Source:     http://learn.parallax.com/ManeuverFunction
  */ 
-void maneuver(int speedLeft, int speedRight, int msTime)
-{
+void maneuver(int speedLeft, int speedRight, int msTime) {
   servoLeft.writeMicroseconds(1500 + speedLeft);   // Set Left servo speed
   servoRight.writeMicroseconds(1500 - speedRight); // Set right servo speed
-  if(msTime==-1)                                   // if msTime = -1
-  {                                  
+  if (msTime==-1) {                                // if msTime = -1                        
     servoLeft.detach();                            // Stop servo signals
     servoRight.detach();   
   }
@@ -171,16 +163,14 @@ int turretTime(int degreeVal) {
  * Get cm distance measurment from Ping Ultrasonic Distance Sensor
  * Returns: distance measurement in cm.   
  */ 
-int cmDistance()
-{
+int cmDistance() {
   int distance = 0;                                // Initialize distance to zero    
-  do                                               // Loop in case of zero measurement
-  {
+  do {                                             // Loop in case of zero measurement
     long us = ping(pingPin);                        // Get Ping))) microsecond measurement
     distance = convert(us, usTocm);                // Convert to cm measurement
     delay(3);                                      // Pause before retry (if needed)
   }
-  while(distance == 0);                           
+  while (distance == 0);                           
   return distance;                                 // Return distance measurement
 }
 
@@ -190,8 +180,7 @@ int cmDistance()
  *             scalar - 29 for us to cm, or 74 for us to in.
  * Returns:    distance measurement dictated by the scalar.   
  */ 
-long convert(long us, int scalar)
-{
+long convert(long us, int scalar) {
     return us / scalar / 2;                        // Echo round trip time -> cm
 }
 
@@ -202,8 +191,7 @@ long convert(long us, int scalar)
  * Source:    Ping by David A. Mellis, located in File -> Examples -> Sensors
  * To-Do:     Double check timing against datasheet
  */ 
-long ping(int pin)
-{
+long ping(int pin) {
   long duration;                                   // Variables for calculating distance
   pinMode(pin, OUTPUT);                            // I/O pin -> output
   digitalWrite(pin, LOW);                          // Start low
@@ -222,8 +210,7 @@ long ping(int pin)
  * To-do:      Clean up and modularize
  *             Incorporate constants
  */ 
-int findOpening()
-{
+int findOpening() {
                                                     
   int Ai;                                          // Initial turret angle   
   int Af;                                          // Final turret angle
@@ -235,36 +222,29 @@ int findOpening()
   int sMin;                                        // Minimum distance measurement
 
   // Increment or decrement depending on where turret is pointing
-  if(k <= 5)                                       
-  {
+  if (k <= 5) {
     inc = 1;
-  }  
-  else
-  {
+  } else {
     inc = -1;
   }
 
   // Rotate turret until an opening becomes visible.  If it reaches servo limit, 
   // turn back to first angle of detection and try scanning toward other servo limit.
   // If still no opening, rotate robot 90 degrees and try again.
-  do
-  {
+  do {
     repcnt++;                                        // Increment repetition count 
-    if(repcnt > ((sizeof(sequence) / sizeof(int)))*2)// If no opening after two scans
-    {
+    if (repcnt > ((sizeof(sequence) / sizeof(int)))*2) { // If no opening after two scans
       maneuver(-200, -200, 100);                     // Back up, turn, and stop to try again
       maneuver(-200, 200, 90*6);
       maneuver(0, 0, 1);
     }
     k += inc;                                        // Increment/decrement k
-    if(k == -1)                                      // Change inc/dec value if limit reached
-    {
+    if (k == -1) {                                   // Change inc/dec value if limit reached
       k = ki;
       inc = -inc;
       dt = 250;                                      // Turret will take longer to get there
     }
-    if(k == 11)
-    {
+    if (k == 11) {
       k = ki;
       inc = -inc;
       dt = 250;
@@ -283,12 +263,10 @@ int findOpening()
   while(cm[i] < 30);                                 // Keep checking to edge of obstacle
   
   sMin = 1000;                                       // Initialize minimum distance to impossibly large value
-  for(int t = 0; t <= 10; t++)
-  {  
+  for (int t = 0; t <= 10; t++) {  
     if(sMin > cm[t]) sMin = cm[t];                   // Use sMin to track smallest distance
   }
-  if(sMin < 6)                                       // If less than 6 cm, back up a little
-  {
+  if (sMin < 6) {                                    // If less than 6 cm, back up a little
     maneuver(-200, -200, 350);
     k = -1;                                          // Get turret ready to start over
   }  
@@ -305,8 +283,7 @@ int findOpening()
   int aMax = -2;                                     // Initialize maximum distance measurements to impossibly small values
   int cmMax = -2;
 
-  do                                                 // Loop for scan
-  {
+  do {                                               // Loop for scan
     k += inc;                                        // Inc/dec turret position
     // Look up index for turret position
     i = findIn(k, sequence, sizeof(sequence)/sizeof(int));
@@ -316,8 +293,7 @@ int findOpening()
     
     cm[i] = cmDistance();                            // Measure distance
 
-    if(cm[i]>cmMax)                                  // Keep track of max distance and angle(max distance)
-    {
+    if (cm[i]>cmMax) {                               // Keep track of max distance and angle(max distance)
       cmMax = cm[i];
       aMax = sequence[i]; 
     }  
@@ -334,12 +310,9 @@ int findOpening()
   int theta = sequence[i] * degreesTurret;           
   turret(theta);
   
-  if(sMin < 7)                                       // Turn further if too close   
-  {
+  if (sMin < 7) {                                    // Turn further if too close  
     if (A < aMax) return aMax; else return A;
-  }
-  else
-  {
+  } else {
     if (A < aMax) return A; else return aMax;
   }    
 }  
@@ -351,11 +324,9 @@ int findOpening()
  *             elements - number of elements to search
  * Returns:    index where the matching element was found    
  */ 
-int findIn(int value, int array[], int elements)
-{
-  for(int i = 0; i < elements; i++)
-  {
-    if(value == array[i]) return i;
+int findIn(int value, int array[], int elements) {
+  for (int i = 0; i < elements; i++) {
+    if (value == array[i]) return i;
   }
   return -1;
 }  
